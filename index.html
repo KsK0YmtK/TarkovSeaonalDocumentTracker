@@ -108,6 +108,353 @@
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
       background: rgba(16, 185, 129, 0.7);
     }
+
+    /* COMPLETE 達標彈出橫幅動畫 (移除模糊，文字展開後持續 2.5 秒) */
+    @keyframes completeBanner {
+      0% {
+        transform: translateY(-50%) scaleX(0);
+        opacity: 0;
+      }
+      10% {
+        transform: translateY(-50%) scaleX(1);
+        opacity: 1;
+      }
+      85% {
+        transform: translateY(-50%) scaleX(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-50%) scaleX(1.15);
+        opacity: 0;
+      }
+    }
+
+    @keyframes popTextAnim {
+      0% {
+        transform: scale(0.1);
+        opacity: 0;
+      }
+      8% {
+        transform: scale(1.35);
+        opacity: 1;
+      }
+      14% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      /* 14% (約 0.5 秒) 至 85% (約 3.0 秒) 為完全展開顯示階段，剛好持續 2.5 秒 */
+      85% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      92% {
+        transform: scale(1.08) skewX(-12deg);
+        opacity: 0.8;
+      }
+      100% {
+        transform: scale(1.2) skewX(20deg);
+        opacity: 0;
+      }
+    }
+
+    .animate-complete-banner {
+      animation: completeBanner 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .animate-pop-text {
+      animation: popTextAnim 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* 賽博玻璃折射與區域隨機縮放切片 (Cyber Refraction Glitch Slices) */
+    .cyber-refract-slice {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      white-space: nowrap;
+      opacity: 0;
+      text-shadow: -2px 0 rgba(6, 182, 212, 0.9), 2px 0 rgba(244, 63, 94, 0.9), 0 0 12px rgba(16, 185, 129, 0.9);
+    }
+
+    .refract-1 { animation: refractAnim1 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .refract-2 { animation: refractAnim2 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .refract-3 { animation: refractAnim3 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .refract-4 { animation: refractAnim4 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .refract-5 { animation: refractAnim5 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+    @keyframes refractAnim1 {
+      0% { opacity: 1; clip-path: inset(10% 45% 55% 10%); transform: scale(1.48, 1.25) translate(-5px, 2px); }
+      3% { opacity: 0; }
+      6% { opacity: 0.9; clip-path: inset(50% 10% 15% 40%); transform: scale(0.6, 0.75) translate(6px, -2px); }
+      9% { opacity: 0; }
+      14% { opacity: 1; clip-path: inset(20% 65% 35% 5%); transform: scale(1.65, 1.3) translate(-7px, -1px); }
+      18% { opacity: 0; }
+      25% { opacity: 0.85; clip-path: inset(65% 15% 5% 50%); transform: scale(0.68, 0.8) translate(5px, 2px); }
+      30% { opacity: 0; }
+      80% { opacity: 1; clip-path: inset(15% 30% 50% 20%); transform: scale(1.52, 1.35) translate(-5px, 1px); }
+      85% { opacity: 0.1; }
+      91% { opacity: 0.95; clip-path: inset(45% 5% 20% 55%); transform: scale(0.58, 0.85) translate(7px, -2px); }
+      100% { opacity: 0; }
+    }
+
+    @keyframes refractAnim2 {
+      0% { opacity: 0; }
+      2% { opacity: 1; clip-path: inset(60% 20% 10% 35%); transform: scale(0.62, 0.7) translate(5px, -2px); }
+      5% { opacity: 0; }
+      8% { opacity: 1; clip-path: inset(5% 50% 60% 15%); transform: scale(1.58, 1.4) translate(-7px, 3px); }
+      12% { opacity: 0; }
+      16% { opacity: 0.9; clip-path: inset(35% 15% 35% 50%); transform: scale(1.38, 0.7) translate(-3px, -2px); }
+      20% { opacity: 0; }
+      82% { opacity: 1; clip-path: inset(50% 5% 15% 60%); transform: scale(1.62, 1.2) translate(6px, -1px); }
+      87% { opacity: 0; }
+      92% { opacity: 0.9; clip-path: inset(10% 40% 55% 10%); transform: scale(0.65, 0.8) translate(-6px, 2px); }
+      100% { opacity: 0; }
+    }
+
+    @keyframes refractAnim3 {
+      0% { opacity: 1; clip-path: inset(30% 15% 40% 50%); transform: scale(1.55, 1.3) translate(-6px, -2px); }
+      4% { opacity: 0; }
+      10% { opacity: 1; clip-path: inset(70% 40% 5% 10%); transform: scale(0.65, 0.85) translate(4px, 1px); }
+      15% { opacity: 0; }
+      22% { opacity: 0.95; clip-path: inset(10% 5% 65% 55%); transform: scale(1.45, 1.2) translate(-5px, 2px); }
+      28% { opacity: 0; }
+      81% { opacity: 1; clip-path: inset(25% 55% 30% 10%); transform: scale(0.58, 0.75) translate(-8px, 1px); }
+      86% { opacity: 0; }
+      93% { opacity: 1; clip-path: inset(55% 20% 10% 40%); transform: scale(1.58, 1.4) translate(6px, -2px); }
+      100% { opacity: 0; }
+    }
+
+    @keyframes refractAnim4 {
+      0% { opacity: 0; }
+      3% { opacity: 1; clip-path: inset(15% 60% 50% 5%); transform: scale(0.62, 0.8) translate(-5px, 2px); }
+      7% { opacity: 0; }
+      11% { opacity: 1; clip-path: inset(45% 10% 20% 45%); transform: scale(1.48, 1.35) translate(6px, -1px); }
+      15% { opacity: 0; }
+      83% { opacity: 0.95; clip-path: inset(5% 25% 60% 30%); transform: scale(1.52, 1.25) translate(-4px, -2px); }
+      88% { opacity: 0; }
+      94% { opacity: 1; clip-path: inset(65% 50% 10% 5%); transform: scale(0.68, 0.8) translate(5px, 1px); }
+      100% { opacity: 0; }
+    }
+
+    @keyframes refractAnim5 {
+      0% { opacity: 1; clip-path: inset(40% 30% 20% 20%); transform: scale(1.65, 1.3) translate(5px, 1px); }
+      5% { opacity: 0; }
+      13% { opacity: 0.9; clip-path: inset(5% 10% 70% 50%); transform: scale(0.62, 0.75) translate(-7px, -2px); }
+      17% { opacity: 0; }
+      84% { opacity: 1; clip-path: inset(50% 45% 10% 10%); transform: scale(1.42, 1.3) translate(-6px, 2px); }
+      89% { opacity: 0; }
+      95% { opacity: 0.95; clip-path: inset(20% 10% 45% 60%); transform: scale(0.68, 0.85) translate(8px, -1px); }
+      100% { opacity: 0; }
+    }
+
+    /* 隨機高密度精細閃爍塊 (Micro Glitch Blocks) */
+    .glitch-block {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    .gb-1 { animation: glitchAnim1 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .gb-2 { animation: glitchAnim2 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .gb-3 { animation: glitchAnim3 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .gb-4 { animation: glitchAnim4 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .gb-5 { animation: glitchAnim5 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .gb-6 { animation: glitchAnim6 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .gb-7 { animation: glitchAnim7 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .gb-8 { animation: glitchAnim8 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .gb-9 { animation: glitchAnim9 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .gb-10 { animation: glitchAnim10 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .gb-11 { animation: glitchAnim11 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .gb-12 { animation: glitchAnim12 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+    @keyframes glitchAnim1 {
+      0% { opacity: 1; background: #ffffff; clip-path: inset(15% 70% 78% 12%); transform: translate(-6px, 0); }
+      2% { opacity: 0.1; }
+      4% { opacity: 1; background: #000000; clip-path: inset(42% 18% 52% 72%); transform: translate(8px, -1px); }
+      6% { opacity: 0; }
+      8% { opacity: 1; background: #ffffff; clip-path: inset(78% 45% 15% 42%); transform: translate(-5px, 1px); }
+      10% { opacity: 0.2; }
+      13% { opacity: 0.9; background: #000000; clip-path: inset(22% 82% 72% 8%); transform: translate(6px, 0); }
+      16% { opacity: 0; }
+      20% { opacity: 0.8; background: #ffffff; clip-path: inset(2% 10% 92% 80%); transform: translate(-3px, 0); }
+      25% { opacity: 0.1; }
+      30% { opacity: 0.7; background: #000000; clip-path: inset(91% 65% 2% 20%); transform: translate(4px, 0); }
+      36% { opacity: 0; }
+      42% { opacity: 0.6; background: #ffffff; clip-path: inset(0% 12% 94% 65%); transform: translate(-4px, 0); }
+      48% { opacity: 0; }
+      55% { opacity: 0.75; background: #000000; clip-path: inset(92% 40% 1% 48%); transform: translate(5px, 0); }
+      62% { opacity: 0; }
+      70% { opacity: 0.8; background: #ffffff; clip-path: inset(1% 85% 93% 2%); transform: translate(-3px, 0); }
+      78% { opacity: 0; }
+      82% { opacity: 1; background: #ffffff; clip-path: inset(28% 62% 66% 25%); transform: translate(-8px, 1px); }
+      86% { opacity: 0.1; }
+      90% { opacity: 0.9; background: #000000; clip-path: inset(62% 15% 32% 70%); transform: translate(7px, -1px); }
+      95% { opacity: 0.2; }
+      100% { opacity: 0; }
+    }
+
+    @keyframes glitchAnim2 {
+      0% { opacity: 1; background: #000000; clip-path: inset(60% 25% 33% 62%); transform: translate(7px, 1px); }
+      3% { opacity: 0; }
+      5% { opacity: 1; background: #ffffff; clip-path: inset(8% 62% 86% 12%); transform: translate(-9px, -1px); }
+      7% { opacity: 0.2; }
+      10% { opacity: 1; background: #000000; clip-path: inset(32% 12% 62% 75%); transform: translate(6px, 2px); }
+      12% { opacity: 0; }
+      15% { opacity: 0.85; background: #ffffff; clip-path: inset(85% 30% 8% 55%); transform: translate(-4px, -1px); }
+      22% { opacity: 0.1; }
+      28% { opacity: 0.7; background: #ffffff; clip-path: inset(93% 8% 0% 82%); transform: translate(-2px, 0); }
+      35% { opacity: 0; }
+      44% { opacity: 0.6; background: #000000; clip-path: inset(0% 75% 94% 10%); transform: translate(3px, 0); }
+      52% { opacity: 0; }
+      60% { opacity: 0.65; background: #ffffff; clip-path: inset(94% 20% 0% 68%); transform: translate(-3px, 0); }
+      68% { opacity: 0; }
+      76% { opacity: 0.7; background: #000000; clip-path: inset(1% 5% 92% 80%); transform: translate(4px, 0); }
+      81% { opacity: 0; }
+      85% { opacity: 1; background: #ffffff; clip-path: inset(12% 42% 82% 18%); transform: translate(-7px, -2px); }
+      89% { opacity: 0.1; }
+      93% { opacity: 0.85; background: #000000; clip-path: inset(52% 8% 40% 78%); transform: translate(6px, 1px); }
+      100% { opacity: 0; }
+    }
+
+    @keyframes glitchAnim3 {
+      0% { opacity: 1; background: #ffffff; clip-path: inset(22% 80% 70% 5%); transform: translate(-8px, 1px); }
+      2% { opacity: 0; }
+      5% { opacity: 1; background: #000000; clip-path: inset(35% 15% 58% 70%); transform: translate(9px, -1px); }
+      8% { opacity: 0.1; }
+      11% { opacity: 1; background: #ffffff; clip-path: inset(80% 50% 12% 38%); transform: translate(-7px, 2px); }
+      14% { opacity: 0; }
+      18% { opacity: 0.8; background: #000000; clip-path: inset(5% 85% 88% 2%); transform: translate(4px, -1px); }
+      25% { opacity: 0; }
+      32% { opacity: 0.6; background: #ffffff; clip-path: inset(90% 15% 2% 70%); transform: translate(-3px, 0); }
+      40% { opacity: 0; }
+      49% { opacity: 0.7; background: #ffffff; clip-path: inset(0% 60% 93% 25%); transform: translate(3px, 0); }
+      58% { opacity: 0; }
+      66% { opacity: 0.65; background: #000000; clip-path: inset(93% 45% 0% 35%); transform: translate(-4px, 0); }
+      75% { opacity: 0; }
+      83% { opacity: 1; background: #ffffff; clip-path: inset(70% 12% 22% 72%); transform: translate(-6px, 1px); }
+      88% { opacity: 0.2; }
+      94% { opacity: 0.9; background: #000000; clip-path: inset(18% 52% 75% 15%); transform: translate(8px, -1px); }
+      100% { opacity: 0; }
+    }
+
+    @keyframes glitchAnim4 {
+      0% { opacity: 1; background: #000000; clip-path: inset(12% 5% 82% 82%); transform: translate(9px, -1px); }
+      3% { opacity: 0.1; }
+      6% { opacity: 1; background: #ffffff; clip-path: inset(28% 72% 65% 12%); transform: translate(-7px, 2px); }
+      9% { opacity: 0; }
+      12% { opacity: 1; background: #000000; clip-path: inset(72% 22% 20% 62%); transform: translate(6px, -1px); }
+      15% { opacity: 0.2; }
+      20% { opacity: 0.75; background: #ffffff; clip-path: inset(92% 65% 0% 15%); transform: translate(-3px, 0); }
+      27% { opacity: 0; }
+      34% { opacity: 0.65; background: #000000; clip-path: inset(0% 25% 94% 60%); transform: translate(4px, 0); }
+      43% { opacity: 0; }
+      52% { opacity: 0.7; background: #ffffff; clip-path: inset(91% 8% 2% 75%); transform: translate(-2px, 0); }
+      61% { opacity: 0; }
+      70% { opacity: 0.6; background: #000000; clip-path: inset(2% 82% 92% 5%); transform: translate(3px, 0); }
+      77% { opacity: 0; }
+      84% { opacity: 1; background: #000000; clip-path: inset(62% 5% 30% 78%); transform: translate(7px, -2px); }
+      89% { opacity: 0.1; }
+      95% { opacity: 0.95; background: #ffffff; clip-path: inset(15% 68% 78% 10%); transform: translate(-8px, 1px); }
+      100% { opacity: 0; }
+    }
+
+    @keyframes glitchAnim5 {
+      0% { opacity: 1; background: #ffffff; clip-path: inset(8% 40% 86% 45%); transform: translate(-10px, 1px); }
+      4% { opacity: 0.8; background: #000000; clip-path: inset(38% 65% 55% 10%); transform: translate(8px, -2px); }
+      8% { opacity: 0; }
+      12% { opacity: 1; background: #ffffff; clip-path: inset(75% 15% 18% 70%); transform: translate(-6px, 1px); }
+      16% { opacity: 0; }
+      82% { opacity: 1; background: #ffffff; clip-path: inset(18% 25% 75% 60%); transform: translate(-9px, 2px); }
+      87% { opacity: 0.1; }
+      92% { opacity: 0.9; background: #000000; clip-path: inset(55% 60% 38% 12%); transform: translate(7px, -1px); }
+      100% { opacity: 0; }
+    }
+
+    @keyframes glitchAnim6 {
+      0% { opacity: 1; background: #000000; clip-path: inset(82% 10% 8% 75%); transform: translate(8px, 1px); }
+      3% { opacity: 0; }
+      6% { opacity: 1; background: #ffffff; clip-path: inset(15% 68% 78% 18%); transform: translate(-8px, -1px); }
+      9% { opacity: 0.1; }
+      12% { opacity: 0.9; background: #000000; clip-path: inset(48% 30% 45% 55%); transform: translate(6px, 1px); }
+      15% { opacity: 0; }
+      80% { opacity: 1; background: #ffffff; clip-path: inset(82% 48% 8% 38%); transform: translate(-7px, -1px); }
+      86% { opacity: 0.2; }
+      91% { opacity: 0.85; background: #000000; clip-path: inset(25% 18% 68% 68%); transform: translate(6px, 2px); }
+      100% { opacity: 0; }
+    }
+
+    @keyframes glitchAnim7 {
+      0% { opacity: 1; background: #ffffff; clip-path: inset(5% 82% 88% 2%); transform: translate(-6px, -1px); }
+      2% { opacity: 0; }
+      5% { opacity: 1; background: #000000; clip-path: inset(88% 2% 4% 82%); transform: translate(8px, 1px); }
+      8% { opacity: 0.1; }
+      11% { opacity: 0.9; background: #ffffff; clip-path: inset(35% 62% 58% 22%); transform: translate(-5px, -1px); }
+      15% { opacity: 0; }
+      83% { opacity: 1; background: #000000; clip-path: inset(68% 28% 24% 58%); transform: translate(7px, 1px); }
+      89% { opacity: 0.1; }
+      94% { opacity: 0.9; background: #ffffff; clip-path: inset(10% 75% 82% 8%); transform: translate(-6px, -1px); }
+      100% { opacity: 0; }
+    }
+
+    @keyframes glitchAnim8 {
+      0% { opacity: 1; background: #000000; clip-path: inset(45% 72% 48% 12%); transform: translate(7px, 1px); }
+      3% { opacity: 0.1; }
+      7% { opacity: 1; background: #ffffff; clip-path: inset(78% 18% 15% 68%); transform: translate(-8px, -2px); }
+      10% { opacity: 0; }
+      14% { opacity: 0.85; background: #000000; clip-path: inset(12% 35% 82% 50%); transform: translate(5px, 1px); }
+      18% { opacity: 0; }
+      81% { opacity: 1; background: #ffffff; clip-path: inset(32% 55% 62% 28%); transform: translate(-7px, 1px); }
+      87% { opacity: 0.2; }
+      93% { opacity: 0.9; background: #000000; clip-path: inset(75% 22% 18% 62%); transform: translate(6px, -1px); }
+      100% { opacity: 0; }
+    }
+
+    @keyframes glitchAnim9 {
+      0% { opacity: 1; background: #ffffff; clip-path: inset(90% 20% 2% 65%); transform: translate(-5px, 1px); }
+      4% { opacity: 0.1; }
+      8% { opacity: 1; background: #000000; clip-path: inset(2% 65% 90% 20%); transform: translate(6px, -1px); }
+      12% { opacity: 0; }
+      84% { opacity: 1; background: #ffffff; clip-path: inset(48% 12% 45% 72%); transform: translate(-7px, -1px); }
+      90% { opacity: 0.1; }
+      96% { opacity: 0.85; background: #000000; clip-path: inset(15% 80% 78% 5%); transform: translate(5px, 2px); }
+      100% { opacity: 0; }
+    }
+
+    @keyframes glitchAnim10 {
+      0% { opacity: 1; background: #000000; clip-path: inset(18% 28% 75% 58%); transform: translate(6px, -1px); }
+      3% { opacity: 0; }
+      7% { opacity: 1; background: #ffffff; clip-path: inset(65% 58% 28% 18%); transform: translate(-7px, 1px); }
+      11% { opacity: 0.1; }
+      82% { opacity: 1; background: #000000; clip-path: inset(85% 35% 8% 50%); transform: translate(6px, 1px); }
+      88% { opacity: 0.2; }
+      94% { opacity: 0.9; background: #ffffff; clip-path: inset(8% 50% 85% 35%); transform: translate(-6px, -1px); }
+      100% { opacity: 0; }
+    }
+
+    @keyframes glitchAnim11 {
+      0% { opacity: 1; background: #ffffff; clip-path: inset(72% 60% 22% 18%); transform: translate(-8px, 1px); }
+      5% { opacity: 0.1; }
+      9% { opacity: 1; background: #000000; clip-path: inset(22% 18% 72% 60%); transform: translate(7px, -1px); }
+      14% { opacity: 0; }
+      85% { opacity: 1; background: #ffffff; clip-path: inset(38% 80% 55% 5%); transform: translate(-6px, 1px); }
+      91% { opacity: 0.1; }
+      97% { opacity: 0.9; background: #000000; clip-path: inset(55% 5% 38% 80%); transform: translate(8px, -1px); }
+      100% { opacity: 0; }
+    }
+
+    @keyframes glitchAnim12 {
+      0% { opacity: 1; background: #000000; clip-path: inset(2% 45% 92% 42%); transform: translate(5px, 1px); }
+      4% { opacity: 0.1; }
+      8% { opacity: 1; background: #ffffff; clip-path: inset(92% 42% 2% 45%); transform: translate(-6px, -1px); }
+      13% { opacity: 0; }
+      83% { opacity: 1; background: #000000; clip-path: inset(60% 32% 32% 52%); transform: translate(7px, -1px); }
+      89% { opacity: 0.2; }
+      95% { opacity: 0.85; background: #ffffff; clip-path: inset(32% 52% 60% 32%); transform: translate(-5px, 1px); }
+      100% { opacity: 0; }
+    }
   </style>
 </head>
 <body class="bg-slate-100 dark:bg-zinc-950 text-slate-800 dark:text-zinc-100 min-h-screen transition-colors duration-300 font-sans pb-24">
@@ -266,7 +613,9 @@
         clickToRemoveNode: "點擊即可移除此節點",
         clickToCopy: "點擊複製名稱：",
         zeroTitle: "歸零",
-        langBtnText: "English"
+        langBtnText: "English",
+        targetLabel: "目標",
+        foundLabel: "已拾"
       },
       en: {
         autoSave: "💾 Auto Saved",
@@ -293,7 +642,9 @@
         clickToRemoveNode: "Click to remove node",
         clickToCopy: "Click to copy name: ",
         zeroTitle: "Reset to 0",
-        langBtnText: "繁體中文"
+        langBtnText: "繁體中文",
+        targetLabel: "Req",
+        foundLabel: "Found"
       }
     };
 
@@ -316,7 +667,14 @@
     };
 
     const counts = new Array(itemsData.length).fill(0);
+    const foundCounts = new Array(itemsData.length).fill(0);
     let transitPath = [];
+    
+    // 紀錄各卡片上一狀態與動畫過期時間，確保已拾取大於目標或連續操作時動畫不被中斷
+    const lastCompletedState = new Array(itemsData.length).fill(false);
+    const completionAnimExpiry = new Array(itemsData.length).fill(0);
+    const animTimeouts = new Array(itemsData.length).fill(null);
+    let isInitialRender = true;
 
     const STORAGE_KEY = 'tarkov_doc_tracker_state';
 
@@ -325,6 +683,7 @@
       try {
         const state = {
           counts: counts,
+          foundCounts: foundCounts,
           transitPath: transitPath,
           currentLang: currentLang
         };
@@ -343,6 +702,11 @@
           if (Array.isArray(parsed.counts) && parsed.counts.length === itemsData.length) {
             for (let i = 0; i < counts.length; i++) {
               counts[i] = typeof parsed.counts[i] === 'number' ? parsed.counts[i] : 0;
+            }
+          }
+          if (Array.isArray(parsed.foundCounts) && parsed.foundCounts.length === itemsData.length) {
+            for (let i = 0; i < foundCounts.length; i++) {
+              foundCounts[i] = typeof parsed.foundCounts[i] === 'number' ? parsed.foundCounts[i] : 0;
             }
           }
           if (Array.isArray(parsed.transitPath)) {
@@ -427,35 +791,107 @@
 
       itemsData.forEach((item, index) => {
         const count = counts[index];
+        const foundCount = foundCounts[index];
         const isActive = count > 0;
+        const isCompleted = count > 0 && foundCount >= count;
+
+        // 當從未完成變為完成時，觸發 3.5 秒完整動畫計時，防止在已拾取大於目標時中斷動畫
+        if (!isInitialRender && isCompleted && !lastCompletedState[index]) {
+          completionAnimExpiry[index] = Date.now() + 3500;
+          if (animTimeouts[index]) clearTimeout(animTimeouts[index]);
+          animTimeouts[index] = setTimeout(() => {
+            renderCards();
+          }, 3500);
+        }
+        
+        // 若數量降至未完成，重置動畫狀態
+        if (!isCompleted) {
+          completionAnimExpiry[index] = 0;
+          if (animTimeouts[index]) {
+            clearTimeout(animTimeouts[index]);
+            animTimeouts[index] = null;
+          }
+        }
+
+        lastCompletedState[index] = isCompleted;
+
+        const now = Date.now();
+        const isAnimating = isCompleted && completionAnimExpiry[index] > now;
+        const elapsedSec = isAnimating ? ((3500 - (completionAnimExpiry[index] - now)) / 1000).toFixed(2) : 0;
+        const animDelayStyle = isAnimating ? `style="animation-delay: -${elapsedSec}s;"` : '';
+
+        let cardStyleClass = 'border-slate-200 dark:border-zinc-800';
+        if (isCompleted) {
+          cardStyleClass = 'border-emerald-500 bg-emerald-500/10 dark:bg-emerald-950/30 shadow-lg shadow-emerald-500/20 ring-2 ring-emerald-500/50';
+        } else if (isActive) {
+          cardStyleClass = 'border-amber-500 shadow-md shadow-amber-500/10';
+        }
 
         const card = document.createElement('div');
-        card.className = `flex flex-col bg-white dark:bg-zinc-900 border ${isActive ? 'border-amber-500 shadow-md shadow-amber-500/10' : 'border-slate-200 dark:border-zinc-800'} rounded-2xl p-4 transition-all duration-200 hover:border-amber-500/50`;
+        card.className = `relative overflow-hidden flex flex-col bg-white dark:bg-zinc-900 border ${cardStyleClass} rounded-2xl p-4 transition-all duration-200 hover:border-amber-500/50`;
 
         card.innerHTML = `
+          <!-- 延伸至整個卡片兩側邊緣的 COMPLETE 彈出與黑白亂碼閃爍橫幅 (支援無縫平滑播放) -->
+          ${isAnimating ? `
+            <div class="animate-complete-banner absolute inset-x-0 top-1/2 -translate-y-1/2 z-30 pointer-events-none py-3 bg-zinc-950/95 shadow-[0_0_30px_rgba(16,185,129,0.6)] flex items-center justify-center overflow-hidden" ${animDelayStyle}>
+              <!-- 隨機高密度精細黑白閃爍亂碼塊層 (12 層小方塊與碎片) -->
+              <div class="glitch-block gb-1" ${animDelayStyle}></div>
+              <div class="glitch-block gb-2" ${animDelayStyle}></div>
+              <div class="glitch-block gb-3" ${animDelayStyle}></div>
+              <div class="glitch-block gb-4" ${animDelayStyle}></div>
+              <div class="glitch-block gb-5" ${animDelayStyle}></div>
+              <div class="glitch-block gb-6" ${animDelayStyle}></div>
+              <div class="glitch-block gb-7" ${animDelayStyle}></div>
+              <div class="glitch-block gb-8" ${animDelayStyle}></div>
+              <div class="glitch-block gb-9" ${animDelayStyle}></div>
+              <div class="glitch-block gb-10" ${animDelayStyle}></div>
+              <div class="glitch-block gb-11" ${animDelayStyle}></div>
+              <div class="glitch-block gb-12" ${animDelayStyle}></div>
+              
+              <!-- 彈出文字與賽博玻璃折射區 -->
+              <div class="animate-pop-text relative z-10 flex items-center justify-center select-none" ${animDelayStyle}>
+                <!-- 基底主文字 -->
+                <span class="font-black text-lg sm:text-xl tracking-widest text-emerald-400 drop-shadow-[0_0_12px_rgba(52,211,153,0.9)] uppercase">
+                  ★ COMPLETE ★
+                </span>
+
+                <!-- 賽博玻璃折射與區域隨機縮放切片 (Cyber Refraction Glitch Slices) -->
+                <span class="cyber-refract-slice refract-1 font-black text-lg sm:text-xl tracking-widest text-emerald-300 uppercase" ${animDelayStyle}>★ COMPLETE ★</span>
+                <span class="cyber-refract-slice refract-2 font-black text-lg sm:text-xl tracking-widest text-emerald-200 uppercase" ${animDelayStyle}>★ COMPLETE ★</span>
+                <span class="cyber-refract-slice refract-3 font-black text-lg sm:text-xl tracking-widest text-teal-300 uppercase" ${animDelayStyle}>★ COMPLETE ★</span>
+                <span class="cyber-refract-slice refract-4 font-black text-lg sm:text-xl tracking-widest text-emerald-400 uppercase" ${animDelayStyle}>★ COMPLETE ★</span>
+                <span class="cyber-refract-slice refract-5 font-black text-lg sm:text-xl tracking-widest text-emerald-300 uppercase" ${animDelayStyle}>★ COMPLETE ★</span>
+              </div>
+            </div>
+          ` : ''}
+
           <!-- 可複製/可劃詞選取的文件標題 -->
-          <div class="mb-3 text-center flex items-center justify-center gap-1.5 group/title cursor-pointer py-0.5 px-1 rounded-lg hover:bg-amber-500/10 transition-colors"
+          <div class="mb-2 text-center flex items-center justify-center gap-1.5 group/title cursor-pointer py-0.5 px-1 rounded-lg hover:bg-amber-500/10 transition-colors"
                onclick="copyTitleText('${item.title}', event)" 
                title="${dict.clickToCopy}${item.title}">
             <span class="selectable-text font-bold text-base truncate text-slate-800 dark:text-zinc-200 group-hover/title:text-amber-500 transition-colors">
               ${item.title}
             </span>
             <svg class="w-3.5 h-3.5 opacity-40 group-hover/title:opacity-100 text-amber-500 transition-opacity shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 012-2v-8a2 2 0 01-2-2h-8a2 2 0 01-2 2v8a2 2 0 012 2z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 012-2v-8a2 2 0 01-2 2v8a2 2 0 012 2z"/>
             </svg>
           </div>
 
-          <!-- 正方形按鈕圖片區 -->
-          <div class="relative w-full aspect-square mb-3 rounded-xl overflow-hidden cursor-pointer border-2 ${isActive ? 'border-amber-500' : 'border-transparent'} transition-all group" onclick="handleSquareClick(${index})">
+          <!-- 正方形按鈕圖片區 (單個方塊縮小與優化比例) -->
+          <div class="relative w-full max-w-[200px] mx-auto aspect-square mb-3 rounded-xl overflow-hidden cursor-pointer border-2 ${isCompleted ? 'border-emerald-500' : (isActive ? 'border-amber-500' : 'border-transparent')} transition-all group" onclick="handleSquareClick(${index})">
             <img src="${item.img}" alt="${item.title}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" onerror="this.src='https://via.placeholder.com/300?text=${encodeURIComponent(item.title)}'" />
             <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
 
-            <!-- 右下角數量提示標籤 -->
-            ${isActive ? `
-              <div class="absolute bottom-2 right-2 bg-amber-500 text-zinc-950 font-black text-xs px-2 py-0.5 rounded-full flex items-center justify-center shadow-lg border border-zinc-950/20 animate-bounce-short">
-                x${count}
+            <!-- 右下角數量提示標籤（僅在 count > 0 時顯示，未選取/count=0 時自動隱藏） -->
+            ${isCompleted ? `
+              <div class="absolute bottom-2 right-2 bg-emerald-500 text-zinc-950 font-black text-xs px-2.5 py-0.5 rounded-full flex items-center justify-center shadow-lg border border-zinc-950/20 gap-1 animate-pulse">
+                ✓ x${foundCount}/${count}
               </div>
-            ` : ''}
+            ` : (isActive ? `
+              <div class="absolute bottom-2 right-2 bg-amber-500 text-zinc-950 font-black text-xs px-2 py-0.5 rounded-full flex items-center justify-center shadow-lg border border-zinc-950/20 animate-bounce-short">
+                x${foundCount > 0 ? `${foundCount}/${count}` : count}
+              </div>
+            ` : '')}
           </div>
 
           <!-- 註解區：分三列垂直顯示地圖名稱 -->
@@ -479,36 +915,62 @@
             }).join('')}
           </div>
 
-          <!-- 控制器區域 -->
-          <div class="h-10 flex items-center justify-center">
-            ${isActive ? `
+          <!-- 控制器區域：僅在目標需求數量 > 0 時顯示 -->
+          ${isActive ? `
+            <div class="flex flex-col gap-1.5 mt-auto">
+              <!-- 上排：目標需求數量控制器 -->
               <div class="flex items-center justify-between w-full bg-slate-100 dark:bg-zinc-800/80 rounded-xl p-1 border border-slate-200 dark:border-zinc-700/60">
-                <!-- 歸零按鈕 -->
-                <button onclick="zeroCount(${index}, event)" class="w-7 h-7 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 font-bold flex items-center justify-center transition-colors text-xs" title="${dict.zeroTitle}">
-                  ↺
-                </button>
-                <!-- 減少按鈕 -->
-                <button onclick="decrement(${index}, event)" class="w-7 h-7 rounded-lg bg-white dark:bg-zinc-700 hover:bg-slate-200 dark:hover:bg-zinc-600 text-slate-700 dark:text-zinc-200 font-bold flex items-center justify-center shadow-sm transition-colors">
-                  -
-                </button>
-                <!-- 可手動輸入的數量輸入框 -->
-                <input 
-                  type="number" 
-                  min="0"
-                  max="999"
-                  value="${count}" 
-                  onchange="handleInputChange(${index}, this.value)"
-                  onkeydown="if(event.key==='Enter') this.blur()"
-                  onclick="event.stopPropagation()"
-                  class="w-12 text-center bg-transparent font-black text-amber-600 dark:text-amber-400 focus:outline-none focus:bg-amber-500/10 rounded py-0.5 text-sm selectable-text"
-                />
-                <!-- 增加按鈕 -->
-                <button onclick="increment(${index}, event)" class="w-7 h-7 rounded-lg bg-white dark:bg-zinc-700 hover:bg-slate-200 dark:hover:bg-zinc-600 text-slate-700 dark:text-zinc-200 font-bold flex items-center justify-center shadow-sm transition-colors">
-                  +
-                </button>
+                <span class="text-[10px] font-black text-amber-600 dark:text-amber-400 pl-1 select-none">${dict.targetLabel}</span>
+                <div class="flex items-center gap-1">
+                  <button onclick="zeroCount(${index}, event)" class="w-6 h-6 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 font-bold flex items-center justify-center transition-colors text-xs" title="${dict.zeroTitle}">
+                    ↺
+                  </button>
+                  <button onclick="decrement(${index}, event)" class="w-6 h-6 rounded-lg bg-white dark:bg-zinc-700 hover:bg-slate-200 dark:hover:bg-zinc-600 text-slate-700 dark:text-zinc-200 font-bold flex items-center justify-center shadow-sm transition-colors text-xs">
+                    -
+                  </button>
+                  <input 
+                    type="number" 
+                    min="0"
+                    max="999"
+                    value="${count}" 
+                    onchange="handleInputChange(${index}, this.value)"
+                    onkeydown="if(event.key==='Enter') this.blur()"
+                    onclick="event.stopPropagation()"
+                    class="w-10 text-center bg-transparent font-black text-amber-600 dark:text-amber-400 focus:outline-none focus:bg-amber-500/10 rounded py-0.5 text-xs selectable-text"
+                  />
+                  <button onclick="increment(${index}, event)" class="w-6 h-6 rounded-lg bg-white dark:bg-zinc-700 hover:bg-slate-200 dark:hover:bg-zinc-600 text-slate-700 dark:text-zinc-200 font-bold flex items-center justify-center shadow-sm transition-colors text-xs">
+                    +
+                  </button>
+                </div>
               </div>
-            ` : ''}
-          </div>
+
+              <!-- 下排：已拾取數量控制器 (只能手動 +- 與輸入) -->
+              <div class="flex items-center justify-between w-full bg-slate-100 dark:bg-zinc-800/80 rounded-xl p-1 border ${isCompleted ? 'border-emerald-500/60 bg-emerald-500/10' : 'border-slate-200 dark:border-zinc-700/60'}">
+                <span class="text-[10px] font-black text-emerald-600 dark:text-emerald-400 pl-1 select-none">${dict.foundLabel}</span>
+                <div class="flex items-center gap-1">
+                  <button onclick="zeroFoundCount(${index}, event)" class="w-6 h-6 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 font-bold flex items-center justify-center transition-colors text-xs" title="${dict.zeroTitle}">
+                    ↺
+                  </button>
+                  <button onclick="decrementFound(${index}, event)" class="w-6 h-6 rounded-lg bg-white dark:bg-zinc-700 hover:bg-slate-200 dark:hover:bg-zinc-600 text-slate-700 dark:text-zinc-200 font-bold flex items-center justify-center shadow-sm transition-colors text-xs">
+                    -
+                  </button>
+                  <input 
+                    type="number" 
+                    min="0"
+                    max="999"
+                    value="${foundCount}" 
+                    onchange="handleFoundInputChange(${index}, this.value)"
+                    onkeydown="if(event.key==='Enter') this.blur()"
+                    onclick="event.stopPropagation()"
+                    class="w-10 text-center bg-transparent font-black text-emerald-600 dark:text-emerald-400 focus:outline-none focus:bg-emerald-500/10 rounded py-0.5 text-xs selectable-text"
+                  />
+                  <button onclick="incrementFound(${index}, event)" class="w-6 h-6 rounded-lg bg-white dark:bg-zinc-700 hover:bg-slate-200 dark:hover:bg-zinc-600 text-slate-700 dark:text-zinc-200 font-bold flex items-center justify-center shadow-sm transition-colors text-xs">
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+          ` : ''}
         `;
 
         container.appendChild(card);
@@ -659,22 +1121,26 @@
     }
 
     function increment(index, event) {
-      event.stopPropagation();
+      if (event) event.stopPropagation();
       counts[index]++;
       renderCards();
     }
 
     function decrement(index, event) {
-      event.stopPropagation();
+      if (event) event.stopPropagation();
       if (counts[index] > 0) {
         counts[index]--;
+        if (counts[index] === 0) {
+          foundCounts[index] = 0;
+        }
       }
       renderCards();
     }
 
     function zeroCount(index, event) {
-      event.stopPropagation();
+      if (event) event.stopPropagation();
       counts[index] = 0;
+      foundCounts[index] = 0;
       renderCards();
     }
 
@@ -684,11 +1150,45 @@
         val = 0;
       }
       counts[index] = val;
+      if (val === 0) {
+        foundCounts[index] = 0;
+      }
+      renderCards();
+    }
+
+    // 已拾取數量的獨立控制器函數
+    function incrementFound(index, event) {
+      if (event) event.stopPropagation();
+      foundCounts[index]++;
+      renderCards();
+    }
+
+    function decrementFound(index, event) {
+      if (event) event.stopPropagation();
+      if (foundCounts[index] > 0) {
+        foundCounts[index]--;
+      }
+      renderCards();
+    }
+
+    function zeroFoundCount(index, event) {
+      if (event) event.stopPropagation();
+      foundCounts[index] = 0;
+      renderCards();
+    }
+
+    function handleFoundInputChange(index, value) {
+      let val = parseInt(value, 10);
+      if (isNaN(val) || val < 0) {
+        val = 0;
+      }
+      foundCounts[index] = val;
       renderCards();
     }
 
     function resetAll() {
       counts.fill(0);
+      foundCounts.fill(0);
       transitPath = [];
       renderCards();
     }
@@ -770,6 +1270,7 @@
     window.onload = function() {
       loadState();   // 從 LocalStorage 載入歷史記憶
       renderCards(); // 繪製畫面
+      isInitialRender = false; // 首次繪製完畢，啟用達標動畫
     }
   </script>
 </body>
