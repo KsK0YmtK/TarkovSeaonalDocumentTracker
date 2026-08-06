@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document Tracker</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            tarkov: {
+              gold: '#c2a649',
+              dark: '#121212',
+              cardDark: '#1e1e1e',
+              borderDark: '#333333'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* 全局預設禁止文字反白選擇（除可複製名稱外） */
+    * {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+
+    /* 允許標題文字自由選取 */
+    .selectable-text {
+      -webkit-user-select: text !important;
+      -moz-user-select: text !important;
+      -ms-user-select: text !important;
+      user-select: text !important;
+    }
+
+    /* 移除 input number 的微調箭頭預設邊距 */
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    /* 共同地圖高亮特效：金色發光 */
+    .map-highlight {
+      background-color: rgba(245, 158, 11, 0.35) !important;
+      border-color: #f59e0b !important;
+      color: #ffffff !important;
+      font-weight: 900 !important;
+      letter-spacing: 0.025em;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.7);
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 0 6px rgba(245, 158, 11, 0.8);
+      transform: scale(1.02);
+    }
+    .dark .map-highlight {
+      background-color: rgba(245, 158, 11, 0.4) !important;
+      border-color: #fbbf24 !important;
+      color: #fffbeb !important;
+      font-weight: 900 !important;
+      letter-spacing: 0.025em;
+      box-shadow: 0 0 14px rgba(251, 191, 36, 0.75);
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 8px rgba(251, 191, 36, 0.9);
+      transform: scale(1.02);
+    }
+
+    /* 點擊選擇的地圖綠色高光特效 */
+    .map-green-highlight {
+      background-color: rgba(16, 185, 129, 0.35) !important;
+      border-color: #10b981 !important;
+      color: #ffffff !important;
+      font-weight: 900 !important;
+      box-shadow: 0 0 14px rgba(16, 185, 129, 0.8) !important;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 8px rgba(16, 185, 129, 0.9) !important;
+      transform: scale(1.03);
+    }
+
+    /* 滑鼠懸停同步地圖特效 */
+    .map-hover-active {
+      background-color: rgba(6, 182, 212, 0.35) !important;
+      border-color: #06b6d4 !important;
+      color: #ffffff !important;
+      font-weight: 900 !important;
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.8) !important;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 0 6px rgba(6, 182, 212, 0.8) !important;
+    }
+
+    /* 自訂平滑滾動條 */
+    .custom-scrollbar::-webkit-scrollbar {
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(16, 185, 129, 0.4);
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgba(16, 185, 129, 0.7);
+    }
+  </style>
+</head>
+<body class="bg-slate-100 dark:bg-zinc-950 text-slate-800 dark:text-zinc-100 min-h-screen transition-colors duration-300 font-sans pb-24">
+
+  <!-- 頂部標題區 -->
+  <header class="border-b border-slate-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/80 backdrop-blur sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="p-2 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+          <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-2xl font-black tracking-wider uppercase bg-gradient-to-r from-amber-500 to-emerald-400 bg-clip-text text-transparent">
+              Document Tracker
+            </h1>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 flex items-center gap-1" title="您的數量與轉移路線已自動儲存於瀏覽器">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              💾 自動記憶
+            </span>
+          </div>
+          <p class="text-xs text-slate-500 dark:text-zinc-400">點擊文件名稱可複製 | 點擊卡片地圖建立單向轉移路線</p>
+        </div>
+      </div>
+
+      <!-- 快捷操作按鈕組 -->
+      <div class="flex items-center gap-2">
+        <!-- 中英切換按鈕 -->
+        <button id="lang-toggle-btn" onclick="toggleLanguage()" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 transition-all flex items-center gap-1.5" title="切換語言 / Switch Language">
+          🌐 <span id="lang-btn-text">English</span>
+        </button>
+        <button onclick="clearTransitPath()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 transition-all flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+          </svg>
+          <span data-i18n="clearRoute">清空轉移路線</span>
+        </button>
+        <button onclick="resetAll()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/20 transition-all flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+          </svg>
+          <span data-i18n="resetAll">重置所有數量</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
+
+    <!-- 單向轉移串聯路線 (Transit Route Flow Bar) -->
+    <div id="transit-route-bar" class="p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-emerald-500/30 shadow-lg shadow-emerald-500/5 transition-all">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3 pb-3 border-b border-slate-100 dark:border-zinc-800">
+        <div class="flex items-center gap-2.5">
+          <div class="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></div>
+          <h2 class="text-base font-bold text-slate-800 dark:text-zinc-100 flex items-center gap-2" data-i18n="transitTitle">
+            🗺️ 地圖單向轉移串聯路線
+          </h2>
+          <span id="transit-status-badge" class="px-2.5 py-0.5 rounded-full text-xs font-black bg-slate-200 text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
+            未選擇地圖
+          </span>
+        </div>
+        
+        <div class="flex items-center gap-2 text-xs">
+          <button onclick="undoTransitStep()" class="px-2.5 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-slate-700 dark:text-zinc-300 transition-all font-medium flex items-center gap-1">
+            <span data-i18n="undoStep">↩ 撤銷上一步</span>
+          </button>
+          <span class="text-xs text-slate-400 dark:text-zinc-500" data-i18n="transitHint">提示：點擊卡片下方地圖標籤即可加入路線</span>
+        </div>
+      </div>
+
+      <!-- 轉移鏈條視覺化展示區 -->
+      <div id="transit-flow-container" class="flex items-center gap-2 overflow-x-auto custom-scrollbar py-3 px-1 min-h-[70px]">
+        <!-- JS 動態生成地圖節點與綠線/紅線+X 轉移箭頭 -->
+      </div>
+    </div>
+
+    <!-- 共同目標提示橫幅 -->
+    <div id="common-targets-bar" class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 hidden transition-all">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="relative flex h-3 w-3">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+        </span>
+        <h3 class="text-sm font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider" data-i18n="sharedTargetsTitle">共同目標地圖 (Shared Targets)</h3>
+      </div>
+      <div id="common-maps-list" class="flex flex-wrap gap-2"></div>
+    </div>
+
+    <!-- 4x2 卡片網格 -->
+    <div id="grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+      <!-- JavaScript 會動態建立 8 個卡片 -->
+    </div>
+  </main>
+
+  <!-- 複製成功的 Toast 浮動提示元件 -->
+  <div id="toast-notification" class="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none transition-all duration-300 opacity-0 translate-y-4">
+    <div class="bg-zinc-900/90 dark:bg-zinc-100/90 text-zinc-100 dark:text-zinc-900 text-xs font-bold px-4 py-2.5 rounded-xl shadow-2xl backdrop-blur flex items-center gap-2 border border-amber-500/40">
+      <svg class="w-4 h-4 text-emerald-400 dark:text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+      </svg>
+      <span id="toast-message">已複製至剪貼簿</span>
+    </div>
+  </div>
+
+  <!-- 右下角切換光暗模式圓形鈕 -->
+  <div class="fixed bottom-6 right-6 z-30">
+    <button id="theme-toggle" onclick="toggleTheme()" class="w-12 h-12 rounded-full bg-amber-500 hover:bg-amber-400 text-zinc-950 font-bold shadow-lg shadow-amber-500/30 flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 focus:outline-none" title="切換光暗風格">
+      <svg id="sun-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+      </svg>
+      <svg id="moon-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+      </svg>
+    </button>
+  </div>
+
+  <script>
+    // 8 個文件資料設定（名稱與地圖名稱保持原樣不修改）
+    const itemsData = [
+      { id: 1, title: "Financial", img: "https://i.ibb.co/GQ8XpwQF/f.png", maps: ["Customs", "Streets of Tarkov", "Interchange"] },
+      { id: 2, title: "PMC personnel", img: "https://i.ibb.co/7t4drvqB/pmc.png", maps: ["Reserve", "Lighthouse", "Icebreaker"] },
+      { id: 3, title: "Project", img: "https://i.ibb.co/RkXzBvk5/PROJECT.png", maps: ["Factory", "Reserve", "Customs"] },
+      { id: 4, title: "Blueprint", img: "https://i.ibb.co/wbM8JJv/B.png", maps: ["Interchange", "The Labyrinth", "Factory"] },
+      { id: 5, title: "Test", img: "https://i.ibb.co/991TzPWw/TEST.png", maps: ["Shoreline", "Woods", "Icebreaker"] },
+      { id: 6, title: "User", img: "https://i.ibb.co/5gqM3xyf/USER.png", maps: ["Streets of Tarkov", "Ground Zero", "The Lab"] },
+      { id: 7, title: "MED", img: "https://i.ibb.co/MkLgPtCK/MED.png", maps: ["The Lab", "Ground Zero", "The Labyrinth"] },
+      { id: 8, title: "Tec", img: "https://i.ibb.co/ns1fwwjd/TEC.png", maps: ["Shoreline", "Woods", "Lighthouse"] }
+    ];
+
+    // 多語言對照辭典 (地圖名稱與文件名稱維持英文)
+    const i18n = {
+      zh: {
+        autoSave: "💾 自動記憶",
+        subTitle: "點擊文件名稱可複製 | 點擊卡片地圖建立單向轉移路線",
+        clearRoute: "清空轉移路線",
+        resetAll: "重置所有數量",
+        transitTitle: "🗺️ 地圖單向轉移串聯路線",
+        noMapSelected: "未選擇地圖",
+        noRouteBuilt: "尚未建立路線",
+        undoStep: "↩ 撤銷上一步",
+        transitHint: "提示：點擊卡片下方地圖標籤即可加入路線",
+        emptyRouteGuide: "👈 請點擊下方卡片中的任何地圖標籤（例如 Customs, Factory...），以組合單向轉移路線",
+        canTransit: "可轉移",
+        cannotTransit: "無法轉移",
+        startPrefix: "起點",
+        selectNextStop: "(請選擇下一站)",
+        validRoute: "✅ 完整路線合法",
+        transitsCount: "次轉移",
+        invalidRoutePrefix: "❌ 包含",
+        invalidRouteSuffix: "個無效轉移",
+        sharedTargetsTitle: "共同目標地圖 (Shared Targets)",
+        itemsCount: "個項目",
+        copiedToast: "已複製名稱：",
+        clickToRemoveNode: "點擊即可移除此節點",
+        clickToCopy: "點擊複製名稱：",
+        zeroTitle: "歸零",
+        langBtnText: "English"
+      },
+      en: {
+        autoSave: "💾 Auto Saved",
+        subTitle: "Click title to copy | Click map tag to build transit route",
+        clearRoute: "Clear Transit Route",
+        resetAll: "Reset All Counts",
+        transitTitle: "🗺️ Map Transit Route Flow",
+        noMapSelected: "No Map Selected",
+        noRouteBuilt: "No Route Built",
+        undoStep: "↩ Undo Step",
+        transitHint: "Hint: Click map tags below to add to route",
+        emptyRouteGuide: "👈 Click map tags on cards below (e.g. Customs, Factory...) to build transit route",
+        canTransit: "Valid",
+        cannotTransit: "Invalid",
+        startPrefix: "Start",
+        selectNextStop: "(Select next stop)",
+        validRoute: "✅ Valid Route",
+        transitsCount: "transits",
+        invalidRoutePrefix: "❌ Contains",
+        invalidRouteSuffix: "invalid transit(s)",
+        sharedTargetsTitle: "Shared Targets",
+        itemsCount: "items",
+        copiedToast: "Copied name: ",
+        clickToRemoveNode: "Click to remove node",
+        clickToCopy: "Click to copy name: ",
+        zeroTitle: "Reset to 0",
+        langBtnText: "繁體中文"
+      }
+    };
+
+    let currentLang = 'zh';
+
+    // 地圖合法轉移圖 (Valid Transit Adjacency Map)
+    const VALID_TRANSITS = {
+      "Ground Zero": ["Streets of Tarkov"],
+      "Streets of Tarkov": ["Ground Zero", "Interchange", "The Lab"],
+      "The Lab": ["Streets of Tarkov"],
+      "Interchange": ["Streets of Tarkov", "Customs"],
+      "Customs": ["Interchange", "Factory", "Reserve", "Shoreline"],
+      "Factory": ["Customs", "Woods", "The Lab"],
+      "Woods": ["Factory", "Reserve", "Customs"],
+      "Reserve": ["Customs", "Woods", "Lighthouse"],
+      "Lighthouse": ["Shoreline"],
+      "Shoreline": ["Lighthouse", "Icebreaker", "The Labyrinth"],
+      "Icebreaker": [],
+      "The Labyrinth": []
+    };
+
+    const counts = new Array(itemsData.length).fill(0);
+    let transitPath = [];
+
+    const STORAGE_KEY = 'tarkov_doc_tracker_state';
+
+    // 儲存狀態至記憶體 (Save state including language)
+    function saveState() {
+      try {
+        const state = {
+          counts: counts,
+          transitPath: transitPath,
+          currentLang: currentLang
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {
+        console.warn('無法寫入 LocalStorage 記憶區', e);
+      }
+    }
+
+    // 從記憶體載入狀態 (Load state)
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed.counts) && parsed.counts.length === itemsData.length) {
+            for (let i = 0; i < counts.length; i++) {
+              counts[i] = typeof parsed.counts[i] === 'number' ? parsed.counts[i] : 0;
+            }
+          }
+          if (Array.isArray(parsed.transitPath)) {
+            transitPath = parsed.transitPath;
+          }
+          if (parsed.currentLang && (parsed.currentLang === 'zh' || parsed.currentLang === 'en')) {
+            currentLang = parsed.currentLang;
+          }
+        }
+      } catch (e) {
+        console.warn('讀取 LocalStorage 失敗', e);
+      }
+    }
+
+    // 切換語言
+    function toggleLanguage() {
+      currentLang = currentLang === 'zh' ? 'en' : 'zh';
+      applyLanguage();
+      renderCards();
+    }
+
+    // 將語言字典替換至介面標籤中
+    function applyLanguage() {
+      const dict = i18n[currentLang];
+
+      // 更新具備 data-i18n 屬性的靜態 HTML 文字
+      document.querySelectorAll('[data-i18n]').forEach(elem => {
+        const key = elem.getAttribute('data-i18n');
+        if (dict[key]) {
+          elem.innerText = dict[key];
+        }
+      });
+
+      // 更新特定標籤
+      const langBtnText = document.getElementById('lang-btn-text');
+      if (langBtnText) langBtnText.innerText = dict.langBtnText;
+
+      saveState();
+    }
+
+    // 複製名稱至剪貼簿
+    function copyTitleText(titleText, event) {
+      if (event) event.stopPropagation();
+      
+      const tempInput = document.createElement("input");
+      tempInput.value = titleText;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      
+      try {
+        document.execCommand("copy");
+        showToast(`${i18n[currentLang].copiedToast}「${titleText}」`);
+      } catch (err) {
+        console.error("複製失敗", err);
+      } finally {
+        document.body.removeChild(tempInput);
+      }
+    }
+
+    // 顯示 Toast 提示
+    let toastTimeout = null;
+    function showToast(message) {
+      const toast = document.getElementById('toast-notification');
+      const msgElem = document.getElementById('toast-message');
+      
+      msgElem.innerText = message;
+      toast.classList.remove('opacity-0', 'translate-y-4');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'translate-y-4');
+      }, 2000);
+    }
+
+    // 渲染卡片
+    function renderCards() {
+      const dict = i18n[currentLang];
+      const container = document.getElementById('grid-container');
+      container.innerHTML = '';
+
+      itemsData.forEach((item, index) => {
+        const count = counts[index];
+        const isActive = count > 0;
+
+        const card = document.createElement('div');
+        card.className = `flex flex-col bg-white dark:bg-zinc-900 border ${isActive ? 'border-amber-500 shadow-md shadow-amber-500/10' : 'border-slate-200 dark:border-zinc-800'} rounded-2xl p-4 transition-all duration-200 hover:border-amber-500/50`;
+
+        card.innerHTML = `
+          <!-- 可複製/可劃詞選取的文件標題 -->
+          <div class="mb-3 text-center flex items-center justify-center gap-1.5 group/title cursor-pointer py-0.5 px-1 rounded-lg hover:bg-amber-500/10 transition-colors"
+               onclick="copyTitleText('${item.title}', event)" 
+               title="${dict.clickToCopy}${item.title}">
+            <span class="selectable-text font-bold text-base truncate text-slate-800 dark:text-zinc-200 group-hover/title:text-amber-500 transition-colors">
+              ${item.title}
+            </span>
+            <svg class="w-3.5 h-3.5 opacity-40 group-hover/title:opacity-100 text-amber-500 transition-opacity shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 012-2v-8a2 2 0 01-2-2h-8a2 2 0 01-2 2v8a2 2 0 012 2z"/>
+            </svg>
+          </div>
+
+          <!-- 正方形按鈕圖片區 -->
+          <div class="relative w-full aspect-square mb-3 rounded-xl overflow-hidden cursor-pointer border-2 ${isActive ? 'border-amber-500' : 'border-transparent'} transition-all group" onclick="handleSquareClick(${index})">
+            <img src="${item.img}" alt="${item.title}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" onerror="this.src='https://via.placeholder.com/300?text=${encodeURIComponent(item.title)}'" />
+            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
+
+            <!-- 右下角數量提示標籤 -->
+            ${isActive ? `
+              <div class="absolute bottom-2 right-2 bg-amber-500 text-zinc-950 font-black text-xs px-2 py-0.5 rounded-full flex items-center justify-center shadow-lg border border-zinc-950/20 animate-bounce-short">
+                x${count}
+              </div>
+            ` : ''}
+          </div>
+
+          <!-- 註解區：分三列垂直顯示地圖名稱 -->
+          <div class="flex flex-col gap-1.5 mb-3 flex-grow">
+            ${item.maps.map(map => {
+              const matchingIndices = transitPath
+                .map((m, idx) => m === map ? idx + 1 : null)
+                .filter(idx => idx !== null);
+              const isSelectedInPath = matchingIndices.length > 0;
+              const badgeNum = isSelectedInPath ? `<span class="bg-emerald-950/40 text-emerald-200 px-1.5 py-0.2 rounded text-[10px] mr-1 font-black">#${matchingIndices.join(', #')}</span>` : '';
+
+              return `
+                <div class="map-tag cursor-pointer text-xs py-1.5 px-2.5 rounded-lg border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-800/50 text-slate-600 dark:text-zinc-400 text-center font-semibold transition-all flex items-center justify-center select-none hover:border-emerald-400/80 ${isSelectedInPath ? 'map-green-highlight' : ''}" 
+                     data-map="${map}" 
+                     onclick="toggleMapTransit('${map}', event)"
+                     onmouseenter="hoverMap('${map}')" 
+                     onmouseleave="unhoverMap()">
+                  ${badgeNum}${map}
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          <!-- 控制器區域 -->
+          <div class="h-10 flex items-center justify-center">
+            ${isActive ? `
+              <div class="flex items-center justify-between w-full bg-slate-100 dark:bg-zinc-800/80 rounded-xl p-1 border border-slate-200 dark:border-zinc-700/60">
+                <!-- 歸零按鈕 -->
+                <button onclick="zeroCount(${index}, event)" class="w-7 h-7 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 font-bold flex items-center justify-center transition-colors text-xs" title="${dict.zeroTitle}">
+                  ↺
+                </button>
+                <!-- 減少按鈕 -->
+                <button onclick="decrement(${index}, event)" class="w-7 h-7 rounded-lg bg-white dark:bg-zinc-700 hover:bg-slate-200 dark:hover:bg-zinc-600 text-slate-700 dark:text-zinc-200 font-bold flex items-center justify-center shadow-sm transition-colors">
+                  -
+                </button>
+                <!-- 可手動輸入的數量輸入框 -->
+                <input 
+                  type="number" 
+                  min="0"
+                  max="999"
+                  value="${count}" 
+                  onchange="handleInputChange(${index}, this.value)"
+                  onkeydown="if(event.key==='Enter') this.blur()"
+                  onclick="event.stopPropagation()"
+                  class="w-12 text-center bg-transparent font-black text-amber-600 dark:text-amber-400 focus:outline-none focus:bg-amber-500/10 rounded py-0.5 text-sm selectable-text"
+                />
+                <!-- 增加按鈕 -->
+                <button onclick="increment(${index}, event)" class="w-7 h-7 rounded-lg bg-white dark:bg-zinc-700 hover:bg-slate-200 dark:hover:bg-zinc-600 text-slate-700 dark:text-zinc-200 font-bold flex items-center justify-center shadow-sm transition-colors">
+                  +
+                </button>
+              </div>
+            ` : ''}
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      updateHighlights();
+      renderTransitBar();
+      applyLanguage();
+      saveState();
+    }
+
+    // 點擊卡片底部的地圖標籤處理
+    function toggleMapTransit(mapName, event) {
+      if (event) event.stopPropagation();
+
+      const lastMap = transitPath[transitPath.length - 1];
+      if (lastMap === mapName) {
+        transitPath.pop();
+      } else {
+        transitPath.push(mapName);
+      }
+
+      renderCards();
+    }
+
+    // 撤銷最後一個轉移節點
+    function undoTransitStep() {
+      if (transitPath.length > 0) {
+        transitPath.pop();
+        renderCards();
+      }
+    }
+
+    // 清空轉移路線
+    function clearTransitPath() {
+      transitPath = [];
+      renderCards();
+    }
+
+    // 從轉移鏈中移除指定索引節點
+    function removeTransitNode(nodeIndex) {
+      transitPath.splice(nodeIndex, 1);
+      renderCards();
+    }
+
+    // 判斷轉移 Map A -> Map B 是否合法
+    function canTransit(fromMap, toMap) {
+      if (!fromMap || !toMap) return false;
+      const validNeighbors = VALID_TRANSITS[fromMap];
+      return validNeighbors ? validNeighbors.includes(toMap) : false;
+    }
+
+    // 渲染轉移路線條
+    function renderTransitBar() {
+      const dict = i18n[currentLang];
+      const container = document.getElementById('transit-flow-container');
+      const badge = document.getElementById('transit-status-badge');
+
+      if (!transitPath || transitPath.length === 0) {
+        container.innerHTML = `
+          <div class="text-xs text-slate-400 dark:text-zinc-500 py-2 px-1 flex items-center gap-2 italic">
+            <span>${dict.emptyRouteGuide}</span>
+          </div>
+        `;
+        badge.className = "px-2.5 py-0.5 rounded-full text-xs font-black bg-slate-200 text-slate-700 dark:bg-zinc-800 dark:text-zinc-400";
+        badge.innerText = dict.noRouteBuilt;
+        return;
+      }
+
+      let html = '';
+      let isFullRouteValid = true;
+      let invalidCount = 0;
+
+      transitPath.forEach((map, index) => {
+        html += `
+          <div onclick="removeTransitNode(${index})" 
+               title="${dict.clickToRemoveNode}" 
+               class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-red-500/20 border border-emerald-500 hover:border-red-500 text-emerald-600 dark:text-emerald-300 hover:text-red-500 dark:hover:text-red-400 font-bold text-xs shadow-md shadow-emerald-500/10 shrink-0 cursor-pointer transition-all group">
+            <span class="bg-emerald-500 group-hover:bg-red-500 text-zinc-950 group-hover:text-white font-black text-[10px] w-4 h-4 rounded-full flex items-center justify-center transition-colors">${index + 1}</span>
+            <span>${map}</span>
+            <span class="ml-1 text-emerald-400 group-hover:text-red-500 font-black text-xs transition-colors">✕</span>
+          </div>
+        `;
+
+        if (index < transitPath.length - 1) {
+          const nextMap = transitPath[index + 1];
+          const isValid = canTransit(map, nextMap);
+
+          if (!isValid) {
+            isFullRouteValid = false;
+            invalidCount++;
+          }
+
+          if (isValid) {
+            html += `
+              <div class="flex flex-col items-center justify-center px-1 shrink-0 group">
+                <span class="text-[9px] text-emerald-500 font-black tracking-tighter uppercase">${dict.canTransit}</span>
+                <div class="flex items-center">
+                  <div class="h-0.5 w-6 bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div>
+                  <svg class="w-4 h-4 text-emerald-500 -ml-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                  </svg>
+                </div>
+              </div>
+            `;
+          } else {
+            html += `
+              <div class="flex flex-col items-center justify-center px-1 shrink-0 group" title="${map} ➔ ${nextMap}">
+                <span class="text-[9px] text-rose-500 font-black tracking-tighter uppercase">${dict.cannotTransit}</span>
+                <div class="flex items-center">
+                  <div class="h-0.5 w-4 bg-rose-500 animate-pulse"></div>
+                  <div class="w-5 h-5 rounded-full bg-rose-600 text-white font-black text-[10px] flex items-center justify-center shadow-md shadow-rose-600/50">
+                    ✕
+                  </div>
+                  <div class="h-0.5 w-4 bg-rose-500 animate-pulse"></div>
+                  <svg class="w-4 h-4 text-rose-500 -ml-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                  </svg>
+                </div>
+              </div>
+            `;
+          }
+        }
+      });
+
+      container.innerHTML = html;
+
+      // 更新路線狀態標籤
+      if (transitPath.length === 1) {
+        badge.className = "px-2.5 py-0.5 rounded-full text-xs font-black bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/30";
+        badge.innerText = `${dict.startPrefix}: ${transitPath[0]} ${dict.selectNextStop}`;
+      } else if (isFullRouteValid) {
+        badge.className = "px-2.5 py-0.5 rounded-full text-xs font-black bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 shadow-sm";
+        badge.innerText = `${dict.validRoute} (${transitPath.length - 1} ${dict.transitsCount})`;
+      } else {
+        badge.className = "px-2.5 py-0.5 rounded-full text-xs font-black bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/30 shadow-sm animate-pulse";
+        badge.innerText = `${dict.invalidRoutePrefix} ${invalidCount} ${dict.invalidRouteSuffix}`;
+      }
+    }
+
+    function handleSquareClick(index) {
+      if (counts[index] === 0) {
+        counts[index] = 1;
+      } else {
+        counts[index]++;
+      }
+      renderCards();
+    }
+
+    function increment(index, event) {
+      event.stopPropagation();
+      counts[index]++;
+      renderCards();
+    }
+
+    function decrement(index, event) {
+      event.stopPropagation();
+      if (counts[index] > 0) {
+        counts[index]--;
+      }
+      renderCards();
+    }
+
+    function zeroCount(index, event) {
+      event.stopPropagation();
+      counts[index] = 0;
+      renderCards();
+    }
+
+    function handleInputChange(index, value) {
+      let val = parseInt(value, 10);
+      if (isNaN(val) || val < 0) {
+        val = 0;
+      }
+      counts[index] = val;
+      renderCards();
+    }
+
+    function resetAll() {
+      counts.fill(0);
+      transitPath = [];
+      renderCards();
+    }
+
+    function updateHighlights() {
+      const activeMapCounts = {};
+      const dict = i18n[currentLang];
+
+      itemsData.forEach((item, index) => {
+        if (counts[index] > 0) {
+          item.maps.forEach(map => {
+            activeMapCounts[map] = (activeMapCounts[map] || 0) + 1;
+          });
+        }
+      });
+
+      const commonMaps = Object.keys(activeMapCounts).filter(map => activeMapCounts[map] >= 2);
+
+      document.querySelectorAll('.map-tag').forEach(tag => {
+        const mapName = tag.getAttribute('data-map');
+        const cardContainer = tag.closest('.flex-col.bg-white, .flex-col.bg-zinc-900');
+        
+        const isCardActive = cardContainer && cardContainer.querySelector('.animate-bounce-short');
+
+        if (!transitPath.includes(mapName) && isCardActive && commonMaps.includes(mapName)) {
+          tag.classList.add('map-highlight');
+        } else {
+          tag.classList.remove('map-highlight');
+        }
+      });
+
+      const banner = document.getElementById('common-targets-bar');
+      const mapsList = document.getElementById('common-maps-list');
+
+      if (commonMaps.length > 0) {
+        banner.classList.remove('hidden');
+        mapsList.innerHTML = commonMaps.map(map => `
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-black bg-amber-500 text-zinc-950 shadow-sm">
+            ${map} 
+            <span class="bg-zinc-950/20 px-1.5 py-0.5 rounded-full text-[10px] font-bold">
+              ${activeMapCounts[map]} ${dict.itemsCount}
+            </span>
+          </span>
+        `).join('');
+      } else {
+        banner.classList.add('hidden');
+      }
+    }
+
+    function hoverMap(mapName) {
+      document.querySelectorAll(`.map-tag[data-map="${mapName}"]`).forEach(tag => {
+        tag.classList.add('map-hover-active');
+      });
+    }
+
+    function unhoverMap() {
+      document.querySelectorAll('.map-tag').forEach(tag => {
+        tag.classList.remove('map-hover-active');
+      });
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const sunIcon = document.getElementById('sun-icon');
+      const moonIcon = document.getElementById('moon-icon');
+
+      if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        sunIcon.classList.add('hidden');
+        moonIcon.classList.remove('hidden');
+      } else {
+        html.classList.add('dark');
+        sunIcon.classList.remove('hidden');
+        moonIcon.classList.add('hidden');
+      }
+    }
+
+    // 初始化載入
+    window.onload = function() {
+      loadState();   // 從 LocalStorage 載入歷史記憶
+      renderCards(); // 繪製畫面
+    }
+  </script>
+</body>
+</html>
